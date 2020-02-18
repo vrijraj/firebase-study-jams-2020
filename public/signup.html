@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  </head>
+  <body>
+
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-4 offset-md-4">
+            <h1>Create your account</h1>
+            <div class="form-group">
+                <input type="email" placeholder="Email" class="form-control" id="email">
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="Password" class="form-control" id="password">
+            </div>
+            <button id="login" class="btn btn-primary">Login</button>
+            <br>
+            <a href="index.html">Home View</a>
+          
+        </div>
+      </div>
+    </div>
+    
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-app.js"></script>
+    <script src="app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-auth.js"></script>
+
+    <script>
+      document.getElementById('login').addEventListener('click', loginUser);
+
+      function loginUser(){
+        var email = document.getElementById('email').value
+        var password = document.getElementById('password').value
+
+        if(email.length && password.length ){
+          firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log(errorCode);
+            console.log(errorMessage);
+          });
+        }
+        else{
+          alert('Email Or Password Needed!')
+        }
+      }
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            document.location = "home.html";
+        } else {
+            // User is signed out.
+            // ...
+        }
+      });
+
+      
+    </script>
+  </body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  </head>
+  <body>
+
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-4 offset-md-4 text-center">
+          <h1>Dashboard</h1>
+          <div id="userData"></div>
+          <br>
+          <button id="logout" class="btn btn-primary btn-sm">Logout</button>
+          <a href="index.html">Home Page</a>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-md-12">
+          <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col" style="width:5%">#</th>
+                    <th scope="col" style="width:60%">Msg</th>
+                    <th scope="col" style="width:20%">Time</th>
+                    <th scope="col" style="width:5%">Action</th>
+                </tr>
+            </thead>
+            <tbody id="data">
+                
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-app.js"></script>
+    <script src="app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-database.js"></script>
+
+    <script>
+      var i=1;
+      firebase.database().ref('thoughts').once('value', function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+          var childKey = childSnapshot.key;
+          var childData = childSnapshot.val();
+          document.getElementById('data').innerHTML += `
+              <tr>
+                  <th scope="row">`+i+++`</th>
+                  <td>`+childData.msg+`</td>
+                  <td>`+childData.timestamp+`</td>
+                  <td><button class='btn btn-danger btn-sm' onclick='deleteData("`+childKey+`")'>Delete</button></td>
+              </tr>
+          `;
+        });
+      });
+
+      function deleteData(id){
+          console.log(id);
+
+          if(confirm("Do you want to Delete ?")){
+              console.log(id);
+
+              firebase.database().ref('thoughts/'+id).remove().then(function(){
+                  alert('Data Deleted');
+                  location.reload();
+              }).catch(function(e){
+                  alert(e);
+              })
+          }
+          else{
+              console.log("Do Nothing");
+          }
+      }
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          var email = user.email;
+          var uid = user.uid;
+
+          document.getElementById('userData').innerHTML = `
+            Email id : ${email}
+          `
+
+        } else {
+            // User is signed out.
+            // ...
+            document.location = "login.html";
+        }
+      });
+
+
+      document.getElementById('logout').addEventListener('click', logoutUser)
+
+      function logoutUser(){
+        firebase.auth().signOut().then(function() {
+            // Sign-out successful.
+            document.location = "login.html";
+            console.log('User Logged Out!');
+        }).catch(function(error) {
+            // An error happened.
+            console.log(error);
+        });
+      }
+      
+    </script>
+  </body>
+</html>
